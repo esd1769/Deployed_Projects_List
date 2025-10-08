@@ -1,0 +1,14 @@
+del /q /f /s %TEMP%\*
+rmdir /s /q C:\Users\emstar\AppData\Local\D3DSCache
+
+
+
+del /s /q C:\Users\emstar\AppData\Local\Temp\*.*
+del /s /q C:\Users\emstar\AppData\Local\Packages\*\TempState\*.*
+del /s /q C:\Users\emstar\AppData\Roaming\*.log
+del /s /q "C:\Users\emstar\AppData\Local\Google\Chrome\User Data\Default\Cache\*.*"
+del /s /q "C:\Users\emstar\AppData\Local\Microsoft\Edge\User Data\Default\Cache\*.*"
+
+for /d %i in (C:\Users\emstar\AppData\Local\Temp\*) do rmdir /s /q "%i"
+for /d %i in (C:\Users\emstar\AppData\Local\Packages\*) do rmdir /s /q "%i\AC" 2>nul
+for /d %i in (C:\Users\emstar\AppData\Local\Packages\*) do rmdir /s /q "%i\TempState" 2>nul
