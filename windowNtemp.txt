@@ -1,0 +1,69 @@
+net stop wuauserv
+net stop bits
+rd /s /q C:\Windows\SoftwareDistribution
+
+Dism.exe /online /Cleanup-Image /StartComponentCleanup
+Dism.exe /online /Cleanup-Image /StartComponentCleanup /ResetBase
+
+vssadmin delete shadows /all /quiet
+
+del /s /q C:\Windows\Temp\*.*
+del /s /q %temp%\*.*
+del /s /q C:\Windows\LiveKernelReports\*.*
+del /s /q C:\Windows\MEMORY.DMP
+
+DISM /Online /Set-ReservedStorageState /State:Disabled
+
+cleanmgr /sageset:1
+cleanmgr /sagerun:1
+del /s /q C:\Users\emstar\AppData\Local\Temp\*.*
+del /s /q C:\Users\emstar\AppData\Local\Packages\*\TempState\*.*
+del /s /q C:\Users\emstar\AppData\Roaming\*.log
+del /s /q "C:\Users\emstar\AppData\Local\Google\Chrome\User Data\Default\Cache\*.*"
+del /s /q "C:\Users\emstar\AppData\Local\Microsoft\Edge\User Data\Default\Cache\*.*"
+
+for /d %i in (C:\Users\emstar\AppData\Local\Temp\*) do rmdir /s /q "%i"
+for /d %i in (C:\Users\emstar\AppData\Local\Packages\*) do rmdir /s /q "%i\AC" 2>nul
+for /d %i in (C:\Users\emstar\AppData\Local\Packages\*) do rmdir /s /q "%i\TempState" 2>nul
+del /q /f /s %TEMP%\*
+del /q /f /s C:\Windows\Prefetch\*
+wevtutil.exe cl System
+wevtutil.exe cl Application
+wevtutil.exe cl Security
+vssadmin delete shadows /all
+del /q /f /s %TEMP%\*
+del /q /f /s C:\Windows\Temp\*
+del /q /f /s %TEMP%\*
+rmdir /s /q C:\Users\emstar\AppData\Local\D3DSCache
+
+
+
+del /s /q C:\Users\emstar\AppData\Local\Temp\*.*
+del /s /q C:\Users\emstar\AppData\Local\Packages\*\TempState\*.*
+del /s /q C:\Users\emstar\AppData\Roaming\*.log
+del /s /q "C:\Users\emstar\AppData\Local\Google\Chrome\User Data\Default\Cache\*.*"
+del /s /q "C:\Users\emstar\AppData\Local\Microsoft\Edge\User Data\Default\Cache\*.*"
+
+for /d %i in (C:\Users\emstar\AppData\Local\Temp\*) do rmdir /s /q "%i"
+for /d %i in (C:\Users\emstar\AppData\Local\Packages\*) do rmdir /s /q "%i\AC" 2>nul
+for /d %i in (C:\Users\emstar\AppData\Local\Packages\*) do rmdir /s /q "%i\TempState" 2>nul
+
+#powershell
+Remove-AppxPackage Microsoft.BingSearch_1.1.33.0_x64__8wekyb3d8bbwe
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v AppsUseLightTheme /t REG_DWORD /d 0 /f
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v SystemUsesLightTheme /t REG_DWORD /d 0 /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v NoAutoUpdate /t REG_DWORD /d 1 /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /v DoNotConnectToWindowsUpdateInternetLocations /t REG_DWORD /d 1 /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v AUOptions /t REG_DWORD /d 1 /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /v DisableWindowsUpdateAccess /t REG_DWORD /d 1 /f
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Personalization" /v LockScreenImage /t REG_SZ /d "D:\ss.png" /f
+
+
+
+
+
+
+
+
+
