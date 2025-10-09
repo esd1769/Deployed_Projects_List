@@ -1,0 +1,17 @@
+uv python install 3.10
+uv python pin 3.10
+uv venv
+uv sync
+
+///////////////////
+:: 1) Install Python 3.10 with uv (local to this project)
+uv python install 3.10
+
+:: 2) Pin the project to that interpreter (uv knows the correct path itself)
+uv python pin 3.10
+
+:: 3) Recreate the venv with that Python
+uv venv --recreate
+
+:: 4) Sync dependencies
+uv sync
