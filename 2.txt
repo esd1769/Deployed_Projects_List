@@ -1,0 +1,11 @@
+dir C:\pagefile.sys
+dir C:\hiberfil.sys
+dir C:\swapfile.sys
+dir "C:\System Volume Information" /s /a
+dir C:\Windows\SoftwareDistribution /s /a
+dir C:\Windows\WinSxS /s /a
+dir C:\Windows\Temp /s /a
+dir "C:\Users\%username%\AppData" /s /a
+dir C:\Windows\MEMORY.DMP
+dir C:\Windows\LiveKernelReports /s /a
+dir C:\Windows\Logs /s /a
