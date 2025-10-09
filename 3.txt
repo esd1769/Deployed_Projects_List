@@ -1,0 +1,15 @@
+net stop wuauserv
+net stop bits
+rd /s /q C:\Windows\SoftwareDistribution
+del /s /q C:\Windows\Temp\*.*
+del /s /q %temp%\*.*
+del /s /q C:\Windows\LiveKernelReports\*.*
+del /s /q C:\Windows\MEMORY.DMP
+cleanmgr /sageset:1
+
+
+
+
+
+
+
