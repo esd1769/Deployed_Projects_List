@@ -1,0 +1,5 @@
+# Delete %TEMP% and system temp, prefetch, then run Disk Cleanup
+Remove-Item -Path $env:TEMP\* -Recurse -Force -ErrorAction SilentlyContinue; 
+Remove-Item -Path C:\Windows\Temp\* -Recurse -Force -ErrorAction SilentlyContinue; 
+Remove-Item -Path C:\Windows\Prefetch\* -Recurse -Force -ErrorAction SilentlyContinue; 
+cleanmgr /sagerun:1
