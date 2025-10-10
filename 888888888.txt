@@ -1,0 +1,43 @@
+net stop wuauserv
+net stop bits
+net stop dosvc
+sc config wuauserv start= disabled
+sc config bits start= disabled
+sc config dosvc start= disabled
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v NoAutoUpdate /t REG_DWORD /d 1 /f
+gpupdate /force
+net stop dosvc
+sc config dosvc start= disabled
+schtasks /Change /TN "\Microsoft\Windows\UpdateOrchestrator\Schedule Scan" /Disable
+schtasks /Change /TN "\Microsoft\Windows\UpdateOrchestrator\USO_UxBroker" /Disable
+schtasks /Change /TN "\Microsoft\Windows\UpdateOrchestrator\Reboot" /Disable
+net stop wuauserv
+net stop bits
+rd /s /q C:\Windows\SoftwareDistribution\Download
+net start wuauserv
+net start bits
+net stop wuauserv
+net stop bits
+net stop dosvc
+
+sc config wuauserv start= disabled
+sc config bits start= disabled
+sc config dosvc start= disabled
+
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" /v NoAutoUpdate /t REG_DWORD /d 1 /f
+gpupdate /force
+
+net stop dosvc
+sc config dosvc start= disabled
+
+schtasks /Change /TN "\Microsoft\Windows\UpdateOrchestrator\Schedule Scan" /Disable
+schtasks /Change /TN "\Microsoft\Windows\UpdateOrchestrator\USO_UxBroker" /Disable
+schtasks /Change /TN "\Microsoft\Windows\UpdateOrchestrator\Reboot" /Disable
+
+net stop wuauserv
+net stop bits
+rd /s /q C:\Windows\SoftwareDistribution\Download
+net start wuauserv
+net start bits
+
+
