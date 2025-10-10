@@ -1,0 +1,64 @@
+# === CONFIGURATION ===
+$Username = "emstar"
+$CUser = "C:\Users\$Username"
+$CLocal = "$CUser\AppData\Local"
+$DBase = "D:\AppDataRedirect"
+$DLocal = "$DBase\Local"
+$DProfile = "$DBase\Profile"
+
+# === Ensure target directories exist ===
+New-Item -Path $DLocal -ItemType Directory -Force | Out-Null
+New-Item -Path $DProfile -ItemType Directory -Force | Out-Null
+
+# === Move & link individual folders ===
+
+# AppData\Local Folders
+$src1 = "$CLocal\Ollama";           $dst1 = "$DLocal\Ollama"
+$src2 = "$CLocal\Microsoft";        $dst2 = "$DLocal\Microsoft"
+$src3 = "$CLocal\NVIDIA";           $dst3 = "$DLocal\NVIDIA"
+$src4 = "$CLocal\Programs";         $dst4 = "$DLocal\Programs"
+$src5 = "$CLocal\Temp";             $dst5 = "$DLocal\Temp"
+$src6 = "$CLocal\Packages";         $dst6 = "$DLocal\Packages"
+
+# Dot-folders (C:\Users\emstar\...)
+$src7 = "$CUser\.condarc";          $dst7 = "$DProfile\.condarc"  # single file, optional
+# (Already done others like .conda, .ollama, .vscode, etc.)
+
+# === Manual moves and symlinks (only if folder exists and is not already linked) ===
+If ((Test-Path $src1) -and !(Test-Path $dst1)) {
+    Move-Item $src1 $dst1 -Force
+    cmd /c mklink /J "`"$src1`"" "`"$dst1`""
+}
+
+If ((Test-Path $src2) -and !(Test-Path $dst2)) {
+    Move-Item $src2 $dst2 -Force
+    cmd /c mklink /J "`"$src2`"" "`"$dst2`""
+}
+
+If ((Test-Path $src3) -and !(Test-Path $dst3)) {
+    Move-Item $src3 $dst3 -Force
+    cmd /c mklink /J "`"$src3`"" "`"$dst3`""
+}
+
+If ((Test-Path $src4) -and !(Test-Path $dst4)) {
+    Move-Item $src4 $dst4 -Force
+    cmd /c mklink /J "`"$src4`"" "`"$dst4`""
+}
+
+If ((Test-Path $src5) -and !(Test-Path $dst5)) {
+    Move-Item $src5 $dst5 -Force
+    cmd /c mklink /J "`"$src5`"" "`"$dst5`""
+}
+
+If ((Test-Path $src6) -and !(Test-Path $dst6)) {
+    Move-Item $src6 $dst6 -Force
+    cmd /c mklink /J "`"$src6`"" "`"$dst6`""
+}
+
+# Optional: move .condarc (file, not folder)
+If ((Test-Path $src7) -and !(Test-Path $dst7)) {
+    Move-Item $src7 $dst7 -Force
+    New-Item -ItemType SymbolicLink -Path $src7 -Target $dst7
+}
+
+Write-Host "`n✅ Done. Remaining folders moved manually and linked."
