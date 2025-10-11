@@ -1,0 +1,50 @@
+# ==========================
+# One-Shot Microsoft Cleanup
+# ==========================
+
+# Function to safely remove files/folders
+function Safe-Remove($path) {
+    if (Test-Path $path) {
+        Remove-Item $path -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
+
+# --------------------------
+# 1. Edge browser caches
+# --------------------------
+Safe-Remove "C:\Users\emstar\AppData\Local\Microsoft\Edge\User Data\Default\Cache\*"
+Safe-Remove "C:\Users\emstar\AppData\Local\Microsoft\Edge\User Data\Default\GPUCache\*"
+Safe-Remove "C:\Users\emstar\AppData\Local\Microsoft\Edge\User Data\Default\ShaderCache\*"
+Safe-Remove "C:\Users\emstar\AppData\Local\Microsoft\Edge\User Data\Default\Local Storage\*"
+Safe-Remove "C:\Users\emstar\AppData\Local\Microsoft\Edge\User Data\Default\IndexedDB\*"
+Safe-Remove "C:\Users\emstar\AppData\Local\Microsoft\Edge\User Data\Default\Service Worker\*"
+
+# --------------------------
+# 2. GameDVR cache
+# --------------------------
+Safe-Remove "C:\Users\emstar\AppData\Local\Microsoft\GameDVR\*"
+
+# --------------------------
+# 3. Windows thumbnail & icon cache
+# --------------------------
+Safe-Remove "C:\Users\emstar\AppData\Local\Microsoft\Windows\Explorer\iconcache_*.db"
+Safe-Remove "C:\Users\emstar\AppData\Local\Microsoft\Windows\Explorer\thumbcache_*.db"
+Safe-Remove "C:\Users\emstar\AppData\Local\Microsoft\Windows\Explorer\IconCacheToDelete\*"
+Safe-Remove "C:\Users\emstar\AppData\Local\Microsoft\Windows\Explorer\ThumbCacheToDelete\*"
+
+# --------------------------
+# 4. Windows WebCache temporary files
+# --------------------------
+Safe-Remove "C:\Users\emstar\AppData\Local\Microsoft\Windows\WebCache\*.log"
+Safe-Remove "C:\Users\emstar\AppData\Local\Microsoft\Windows\WebCache\*.tmp"
+
+# --------------------------
+# 5. Optional Temp cleanup (if exists)
+# --------------------------
+Safe-Remove "C:\Users\emstar\AppData\Local\Microsoft\Temp\*"
+
+# --------------------------
+# 6. Final size check
+# --------------------------
+$totalSize = (Get-ChildItem "C:\Users\emstar\AppData\Local\Microsoft" -Recurse -Force | Measure-Object Length -Sum).Sum
+"{0:N2} MB remaining in Microsoft folder" -f ($totalSize / 1MB)
