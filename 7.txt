@@ -1,0 +1,96 @@
+:: Disable Windows Update Service
+sc stop wuauserv
+sc config wuauserv start= disabled
+
+:: Disable Windows Update Medic Service (Prevents Updates)
+:: NOTE: This may require third-party tools or registry edits, not just service control.
+
+:: Disable AppX Deployment Service (Prevent App installations/upgrades)
+sc stop AppXSVC
+sc config AppXSVC start= disabled
+
+:: Disable Windows Store Auto Update Service
+sc stop WSService
+sc config WSService start= disabled
+
+:: Disable Windows Defender Antivirus (Prevents updates and logs)
+sc stop WinDefend
+sc config WinDefend start= disabled
+
+:: [SKIPPED] Windows Search — ENABLED as requested
+
+:: Disable Telemetry & Data Collection (Prevents Windows from collecting user data)
+reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\DataCollection" /v DoNotAllowDataCollection /t REG_DWORD /d 1 /f
+
+:: Disable System Restore (reduces space consumption)
+vssadmin resize shadowstorage /on=C: /for=C: /maxsize=200MB
+vssadmin delete shadows /for=C: /all
+
+:: Disable Virtual Memory (PageFile) on C: drive
+wmic pagefileset where name="C:\\pagefile.sys" delete
+
+:: Enable Prefetch (Keep it ON)
+reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v EnablePrefetcher /t REG_DWORD /d 3 /f
+
+:: Enable Superfetch (SysMain)
+sc config SysMain start= auto
+sc start SysMain
+
+:: Keep Windows Search (Ensure it's running)
+sc config WSearch start= delayed-auto
+sc start WSearch
+
+:: Disable Windows Error Reporting Service
+sc stop WerSvc
+sc config WerSvc start= disabled
+
+:: Disable Windows Backup Service (Prevents backups and other related data)
+sc stop sdra64
+sc config sdra64 start= disabled
+
+:: Disable Windows Insider Program (Prevents Insider data collection)
+reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate" /v InsiderOnly /t REG_DWORD /d 0 /f
+
+:: Disable Windows Time Service (Prevents time data from being stored)
+sc stop w32time
+sc config w32time start= disabled
+
+:: Disable Remote Desktop Services (If not in use, it can be consuming unnecessary resources)
+sc stop TermService
+sc config TermService start= disabled
+
+:: Prevent Windows from storing crash dump files
+reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v DumpFile /t REG_DWORD /d 0 /f
+reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v DisableCrashDumps /t REG_DWORD /d 1 /f
+
+:: Disable Cortana (Prevents unnecessary data usage)
+reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v AllowCortana /t REG_DWORD /d 0 /f
+
+:: Turn Off Telemetry (Non-Insider version)
+reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\DataCollection" /v AllowTelemetry /t REG_DWORD /d 0 /f
+
+:: Disable Scheduled Tasks for Auto-Updates and Background Processes
+schtasks /change /disable /tn "\Microsoft\Windows\Windows Defender\Windows Defender Cache Maintenance"
+schtasks /change /disable /tn "\Microsoft\Windows\Windows Defender\Windows Defender Cleanup"
+schtasks /change /disable /tn "\Microsoft\Windows\Windows Defender\Windows Defender Detection"
+schtasks /change /disable /tn "\Microsoft\Windows\Windows Defender\Windows Defender Scheduled Scan"
+schtasks /change /disable /tn "\Microsoft\Windows\Windows Defender\Windows Defender Weekly Scan"
+
+:: Delete Temporary Files (Reduces unnecessary space consumption)
+del /f /q /s %TEMP%\*
+del /f /q /s C:\Windows\Temp\*
+
+:: Disable and Clear Windows Event Log (Prevent excessive log writing)
+wevtutil sl Security /ca:Disabled
+wevtutil sl System /ca:Disabled
+wevtutil sl Application /ca:Disabled
+wevtutil cl Application
+wevtutil cl System
+wevtutil cl Security
+
+:: Clean Disk Space (Removes unneeded files)
+cleanmgr /sagerun:1
+
+:: Disable AppData (Prevents app data from being stored)
+:: Note: This requires advanced profile relocation. Use only if you understand user profile redirection.
+reg add "HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer" /v UserProfileDirs /t REG_SZ /d D:\Users /f
