@@ -1,0 +1,41 @@
+# ----------- PART 1: AppData\Local -----------
+$localSource = "$env:LOCALAPPDATA"
+$localDestination = "D:\moved-local-data"
+$localExclude = @("NVIDIA", "Microsoft",  "Temp", "VirtualStore")
+
+if (!(Test-Path $localDestination)) {
+    New-Item -ItemType Directory -Path $localDestination | Out-Null
+}
+
+Get-ChildItem -Path $localSource -Directory | Where-Object { $localExclude -notcontains $_.Name } | ForEach-Object {
+    $src = $_.FullName
+    $dst = Join-Path $localDestination $_.Name
+    if (!(Test-Path $dst)) {
+        Move-Item -Path $src -Destination $dst -Force
+    }
+    if (!(Test-Path $src)) {
+        cmd /c mklink /D "`"$src`"" "`"$dst`"" | Out-Null
+    }
+}
+
+# ----------- PART 2: C:\Users\emstar (User Profile) -----------
+$userProfile = "$env:USERPROFILE"
+$userDestination = "D:\moved-user-data"
+$userExclude = @("Desktop", "Documents", "Downloads", "Pictures", "Videos", "Music", "Saved Games", "Contacts", "Favorites", "Searches", "Links", "3D Objects")
+
+if (!(Test-Path $userDestination)) {
+    New-Item -ItemType Directory -Path $userDestination | Out-Null
+}
+
+Get-ChildItem -Path $userProfile -Directory | Where-Object { $userExclude -notcontains $_.Name } | ForEach-Object {
+    $src = $_.FullName
+    $dst = Join-Path $userDestination $_.Name
+    if (!(Test-Path $dst)) {
+        Move-Item -Path $src -Destination $dst -Force
+    }
+    if (!(Test-Path $src)) {
+        cmd /c mklink /D "`"$src`"" "`"$dst`"" | Out-Null
+    }
+}
+
+Write-Host "`n✅ All eligible folders moved and linked from AppData\Local and User profile." -ForegroundColor Green
