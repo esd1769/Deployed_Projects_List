@@ -1,0 +1,18 @@
+I have the following directories in C:\Users\emstar\AppData\Roaming (or Local):
+
+Code
+GitHub Desktop
+KRLauncher
+KR_G153
+Python
+Trae
+
+Please provide me a **single block of Windows CMD commands** to:
+
+1. Move **only these** folders to D:\moved-local-data\
+2. Delete the originals from C:\Users\emstar\AppData\Roaming (or Local)
+3. Create symbolic directory links (symlinks) from the original location pointing to the new D: drive location
+
+Make sure to use `robocopy` with `/MOVE` to move folders and `mklink /D` for symlinks.
+
+Give me the exact commands I can copy and paste into an elevated Windows Command Prompt.
