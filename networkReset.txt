@@ -1,0 +1,4 @@
+ipconfig /flushdns
+netsh int ip reset
+ipconfig /release
+ipconfig /renew
