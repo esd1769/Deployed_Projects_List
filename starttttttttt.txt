@@ -1,0 +1,3 @@
+conda activate wan2gp
+python wgp.py
+pip cache dir
