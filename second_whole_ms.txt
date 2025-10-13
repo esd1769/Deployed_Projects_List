@@ -1,0 +1,65 @@
+# ===============================================
+# 1. List Microsoft subfolders with approximate size (GB)
+# ===============================================
+Get-ChildItem "C:\Users\emstar\AppData\Local" |
+Select-Object Name, @{Name="Size(GB)";Expression={[math]::round(($_ | Get-ChildItem -Recurse -ErrorAction SilentlyContinue | Measure-Object Length -Sum).Sum /1GB,2)}} |
+Sort-Object "Size(GB)" -Descending
+
+# ===============================================
+# 2. List all files inside Microsoft directory with size & last write time
+# ===============================================
+Get-ChildItem "C:\Users\emstar\AppData\Local\Microsoft" -Recurse -Force |
+Select-Object FullName, Length, LastWriteTime
+
+# ===============================================
+# 3. Remove all files from Microsoft folder (use with caution)
+# ===============================================
+Remove-Item "C:\Users\emstar\AppData\Local\Microsoft\*" -Recurse -Force -ErrorAction SilentlyContinue
+
+# ===============================================
+# 4. Delete Edge browser caches
+# ===============================================
+Remove-Item "C:\Users\emstar\AppData\Local\Microsoft\Edge\User Data\Default\Cache\*" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item "C:\Users\emstar\AppData\Local\Microsoft\Edge\User Data\Default\GPUCache\*" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item "C:\Users\emstar\AppData\Local\Microsoft\Edge\User Data\Default\ShaderCache\*" -Recurse -Force -ErrorAction SilentlyContinue
+
+# ===============================================
+# 5. Delete GameDVR cache
+# ===============================================
+Remove-Item "C:\Users\emstar\AppData\Local\Microsoft\GameDVR\*" -Recurse -Force -ErrorAction SilentlyContinue
+
+# ===============================================
+# 6. Delete Windows thumbnail & icon cache
+# ===============================================
+Remove-Item "C:\Users\emstar\AppData\Local\Microsoft\Windows\Explorer\iconcache_*.db" -Force -ErrorAction SilentlyContinue
+Remove-Item "C:\Users\emstar\AppData\Local\Microsoft\Windows\Explorer\thumbcache_*.db" -Force -ErrorAction SilentlyContinue
+Remove-Item "C:\Users\emstar\AppData\Local\Microsoft\Windows\Explorer\IconCacheToDelete\*" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item "C:\Users\emstar\AppData\Local\Microsoft\Windows\Explorer\ThumbCacheToDelete\*" -Recurse -Force -ErrorAction SilentlyContinue
+
+# ===============================================
+# 7. Delete Windows WebCache temporary files
+# ===============================================
+Remove-Item "C:\Users\emstar\AppData\Local\Microsoft\Windows\WebCache\*.log" -Force -ErrorAction SilentlyContinue
+Remove-Item "C:\Users\emstar\AppData\Local\Microsoft\Windows\WebCache\*.tmp" -Force -ErrorAction SilentlyContinue
+
+# ===============================================
+# 8. Delete Edge Local Storage & IndexedDB (optional, may log you out of sites)
+# ===============================================
+Remove-Item "C:\Users\emstar\AppData\Local\Microsoft\Edge\User Data\Default\Local Storage\*" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item "C:\Users\emstar\AppData\Local\Microsoft\Edge\User Data\Default\IndexedDB\*" -Recurse -Force -ErrorAction SilentlyContinue
+
+# ===============================================
+# 9. Delete Edge Service Worker caches
+# ===============================================
+Remove-Item "C:\Users\emstar\AppData\Local\Microsoft\Edge\User Data\Default\Service Worker\*" -Recurse -Force -ErrorAction SilentlyContinue
+
+# ===============================================
+# 10. Delete Microsoft Temp folder (if exists)
+# ===============================================
+Remove-Item "C:\Users\emstar\AppData\Local\Microsoft\Temp\*" -Recurse -Force -ErrorAction SilentlyContinue
+
+# ===============================================
+# 11. Measure total size of Microsoft folder after cleanup
+# ===============================================
+Get-ChildItem "C:\Users\emstar\AppData\Local\Microsoft" -Recurse -Force |
+Measure-Object Length -Sum
