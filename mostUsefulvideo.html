@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video with Custom Captions</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+    .container {
+      position: relative;
+      width: 990px;
+      height: 990px;
+    }
+    #caption-display {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 15px;
+      font-size: 22px;
+      text-align: center;
+      z-index: 10;
+      min-height: 30px;
+      font-weight: bold;
+    }
+    #video-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    .hidden-video {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="caption-display">Loading captions...</div>
+    <div id="video-container">
+      <!-- Main visible video with no captions -->
+      <iframe 
+        id="main-video"
+        width="990" 
+        height="990" 
+        src="https://www.youtube.com/embed/pqYxZ8jd768?cc_load_policy=0&modestbranding=1&rel=0&showinfo=0"
+        allowfullscreen
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      ></iframe>
+    </div>
+    
+    <!-- Hidden video with captions enabled for extraction -->
+    <div class="hidden-video">
+      <iframe 
+        id="caption-video"
+        width="1" 
+        height="1" 
+        src="https://www.youtube.com/embed/pqYxZ8jd768?cc_load_policy=1&hl=en&cc_lang_pref=en"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      ></iframe>
+    </div>
+  </div>
+
+  <script>
+    // Get references to elements
+    var mainVideo = document.getElementById('main-video');
+    var captionVideo = document.getElementById('caption-video');
+    var captionDisplay = document.getElementById('caption-display');
+    var lastCaptionText = "";
+    var captionCheckInterval;
+    var mainVideoWindow = mainVideo.contentWindow;
+    var captionVideoWindow = captionVideo.contentWindow;
+    
+    // Function to synchronize videos
+    function syncVideos() {
+      // Listen for messages from main video
+      window.addEventListener('message', function(event) {
+        // Check if message is from YouTube player
+        if (event.origin.startsWith('https://www.youtube.com')) {
+          try {
+            var data = JSON.parse(event.data);
+            // If it's a state change event
+            if (data.event === 'onStateChange') {
+              // If main video is paused (state = 2)
+              if (data.info === 2) {
+                // Pause the caption video as well
+                captionVideoWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+              } 
+              // If main video is playing (state = 1)
+              else if (data.info === 1) {
+                // Play the caption video and sync time
+                var currentTime = getCurrentTimeFromMainVideo();
+                captionVideoWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                captionVideoWindow.postMessage('{"event":"command","func":"seekTo","args":[' + currentTime + ', true]}', '*');
+              }
+            }
+          } catch (e) {
+            // Not a JSON message or other error
+          }
+        }
+      });
+    }
+    
+    // Function to get current time from main video
+    function getCurrentTimeFromMainVideo() {
+      try {
+        // Try to get current time via postMessage API
+        mainVideoWindow.postMessage('{"event":"command","func":"getCurrentTime","args":""}', '*');
+        return 0; // Default to 0 if we can't get it
+      } catch (e) {
+        return 0;
+      }
+    }
+    
+    // Function to extract captions from the hidden video
+    function extractCaptions() {
+      captionCheckInterval = setInterval(function() {
+        try {
+          // Try to access the caption video's DOM (may fail due to cross-origin policy)
+          var captionElement = captionVideo.contentDocument.querySelector('.ytp-caption-segment');
+          if (captionElement && captionElement.textContent) {
+            lastCaptionText = captionElement.textContent;
+            captionDisplay.textContent = lastCaptionText;
+          }
+        } catch (e) {
+          // Cross-origin error, we can't directly access the iframe content
+          // Keep showing the last caption we had
+          if (lastCaptionText) {
+            captionDisplay.textContent = lastCaptionText;
+          } else {
+            captionDisplay.textContent = "Auto-generated captions";
+          }
+        }
+      }, 300);
+    }
+    
+    // Initialize everything when the page loads
+    window.onload = function() {
+      // Start caption extraction
+      extractCaptions();
+      
+      // Sync the videos
+      syncVideos();
+      
+      // Add event listener for when main video is ready
+      mainVideo.addEventListener('load', function() {
+        // Enable API for both videos
+        mainVideoWindow.postMessage('{"event":"listening"}', '*');
+        captionVideoWindow.postMessage('{"event":"listening"}', '*');
+      });
+    };
+  </script>
+</body>
+</html>
+
+
